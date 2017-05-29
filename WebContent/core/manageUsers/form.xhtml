@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                template="/resources/#{coreInfo.decorator}/decorator.xhtml">
+
+	<ui:define name="title">
+		<h:outputText value="#{msgsCore['manageUsers.title.create']}" rendered="#{(!manageUsersController.readOnly) and (manageUsersController.selectedEntity.id == null)}" />
+		<h:outputText value="#{msgsCore['manageUsers.title.update']}" rendered="#{(! manageUsersController.readOnly) and (manageUsersController.selectedEntity.id != null)}" />
+		<h:outputText value="#{msgsCore['manageUsers.title.retrieve']}" rendered="#{manageUsersController.readOnly}" />
+	</ui:define>
+    
+    <ui:define name="description">
+		<h:outputText value="#{msgsCore['manageUsers.title.create.description']}" rendered="#{(! manageUsersController.readOnly) and (manageUsersController.selectedEntity.id == null)}" />
+		<h:outputText value="#{msgsCore['manageUsers.title.update.description']}" rendered="#{(! manageUsersController.readOnly) and (manageUsersController.selectedEntity.id != null)}" />
+		<h:outputText value="#{msgsCore['manageUsers.title.retrieve.description']}" rendered="#{manageUsersController.readOnly}" />
+    </ui:define>
+
+	<ui:define name="body">
+	<h:panelGroup rendered="#{sessionController.loggedIn and sessionController.currentUser.userType == sessionController.adminUserType}">
+		<ui:decorate template="/resources/#{coreInfo.decorator}/form.xhtml">
+			<ui:param name="formName" value="form" />
+			<ui:param name="formLabel" value="#{msgsCore['manageUsers.form.title']}" />
+			<p:hotkey bind="#{msgs['jbutler.crud.hotkey.focusFirstField']}" handler="findObjectById('form:name').focus();" />
+
+			<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">
+				<ui:param name="fieldName" value="name" />
+				<ui:param name="label" value="#{msgsCore['manageUsers.form.name']}" />
+				<p:inputText id="name" value="#{manageUsersController.selectedEntity.name}" required="true" pt:placeholder="#{msgsCore['manageUsers.form.name.placeholder']}" disabled="#{manageUsersController.readOnly}">
+					<p:ajax event="blur" update="nameField" />
+				</p:inputText>
+				
+			</ui:decorate>
+			
+			
+			<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">	
+				<ui:param name="fieldName" value="email" />
+				<ui:param name="label" value="#{msgsCore['manageUsers.form.email']}" />
+				<p:inputText id="email" value="#{manageUsersController.selectedEntity.email}" required="true" pt:placeholder="#{msgsCore['manageUsers.form.email.placeholder']}" disabled="#{manageUsersController.readOnly}">
+					<p:ajax event="blur" update="emailField" />
+				</p:inputText>
+			</ui:decorate>
+			
+			<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">	
+				<ui:param name="fieldName" value="userName" />
+				<ui:param name="label" value="#{msgsCore['manageUsers.form.userName']}" />
+				<p:inputText id="userName" value="#{manageUsersController.selectedEntity.userName}" required="true" pt:placeholder="#{msgsCore['manageUsers.form.userName.placeholder']}" disabled="#{manageUsersController.readOnly}">
+					<p:ajax event="blur" update="userNameField" />
+				</p:inputText>
+			</ui:decorate>
+			
+			<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">
+				<ui:param name="fieldName" value="birthDate" />
+				<ui:param name="label" value="#{msgsCore['manageUsers.form.birthDate']}" />
+				<p:inputMask id="birthDate" mask="#{msgs['jbutler.format.date.primefaces']}" value="#{manageUsersController.selectedEntity.birthDate}" disabled="#{manageUsersController.readOnly}">
+					<p:ajax event="blur" update="birthDateField" />
+					<f:convertDateTime type="date" pattern="#{msgs['jbutler.format.date.java']}" />
+				</p:inputMask>
+				<h:outputText value=" (#{msgs['jbutler.format.date.label']})" />
+			</ui:decorate>
+			
+			<h:panelGroup rendered="#{! manageUsersController.readOnly}">
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formbuttonpanel-02.xhtml">
+					<p:commandButton id="cancelButton" action="#{manageUsersController.list}" value="#{msgs['jbutler.crud.button.cancel']}" immediate="true" icon="fa fa-fw fa-close" />
+					<p:commandButton id="saveButton" action="#{manageUsersController.save}" value="#{msgs['jbutler.crud.button.save']}" update=":form :globalMessages" icon="fa fa-fw fa-save" />
+					<p:defaultCommand target="saveButton" />
+					<p:hotkey bind="#{msgs['jbutler.crud.hotkey.backToList']}" action="#{manageUsersController.list}" immediate="true" />
+				</ui:decorate>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{manageUsersController.readOnly}">
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formbuttonpanel-01.xhtml">
+					<p:commandButton id="backButton" action="#{manageUsersController.list}" value="#{msgs['jbutler.crud.button.back']}" immediate="true" icon="fa fa-fw fa-arrow-circle-left" />
+					<p:hotkey bind="#{msgs['jbutler.crud.hotkey.backToList']}" action="#{manageUsersController.list}" immediate="true" />
+				</ui:decorate>
+			</h:panelGroup>
+		</ui:decorate>
+		</h:panelGroup><h:panelGroup rendered="#{!sessionController.loggedIn or sessionController.currentUser.userType != sessionController.adminUserType}">
+			<h:outputText value="#{msgs['jbutler.crud.hotkey.userLimitation']}"></h:outputText>
+		</h:panelGroup>
+    </ui:define>
+</ui:composition>

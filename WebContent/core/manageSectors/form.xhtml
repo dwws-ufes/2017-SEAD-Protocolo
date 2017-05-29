@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                template="/resources/#{coreInfo.decorator}/decorator.xhtml">
+
+	<ui:define name="title">
+		<h:outputText value="#{msgsCore['manageSectors.title.create']}" rendered="#{(!manageSectorsController.readOnly) and (manageSectorsController.selectedEntity.id == null)}" />
+		<h:outputText value="#{msgsCore['manageSectors.title.update']}" rendered="#{(! manageSectorsController.readOnly) and (manageSectorsController.selectedEntity.id != null)}" />
+		<h:outputText value="#{msgsCore['manageSectors.title.retrieve']}" rendered="#{manageSectorsController.readOnly}" />
+	</ui:define>
+    
+    <ui:define name="description">
+		<h:outputText value="#{msgsCore['manageSectors.title.create.description']}" rendered="#{(! manageSectorsController.readOnly) and (manageSectorsController.selectedEntity.id == null)}" />
+		<h:outputText value="#{msgsCore['manageSectors.title.update.description']}" rendered="#{(! manageSectorsController.readOnly) and (manageSectorsController.selectedEntity.id != null)}" />
+		<h:outputText value="#{msgsCore['manageSectors.title.retrieve.description']}" rendered="#{manageSectorsController.readOnly}" />
+    </ui:define>
+
+	<ui:define name="body">
+		<ui:decorate template="/resources/#{coreInfo.decorator}/form.xhtml">
+			<ui:param name="formName" value="form" />
+			<ui:param name="formLabel" value="#{msgsCore['manageSectors.form.title']}" />
+			<p:hotkey bind="#{msgs['jbutler.crud.hotkey.focusFirstField']}" handler="findObjectById('form:name').focus();" />
+
+			<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">
+				<ui:param name="fieldName" value="name" />
+				<ui:param name="label" value="#{msgsCore['manageSectors.form.name']}" />
+				<p:inputText id="name" value="#{manageSectorsController.selectedEntity.name}" required="true" pt:placeholder="#{msgsCore['manageSectors.form.name.placeholder']}" disabled="#{manageSectorsController.readOnly}">
+					<p:ajax event="blur" update="nameField" />
+				</p:inputText>
+			</ui:decorate>
+			
+			<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">
+				<ui:param name="fieldName" value="description" />
+				<ui:param name="label" value="#{msgsCore['manageSectors.form.description']}" />
+				<p:inputText id="description" value="#{manageSectorsController.selectedEntity.description}" required="true" pt:placeholder="#{msgsCore['manageSectors.form.description.placeholder']}" disabled="#{manageSectorsController.readOnly}">
+					<p:ajax event="blur" update="descriptionField" />
+				</p:inputText>
+			</ui:decorate>
+
+			<h:panelGroup rendered="#{! manageSectorsController.readOnly}">
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formbuttonpanel-02.xhtml">
+					<p:commandButton id="cancelButton" action="#{manageSectorsController.list}" value="#{msgs['jbutler.crud.button.cancel']}" immediate="true" icon="fa fa-fw fa-close" />
+					<p:commandButton id="saveButton" action="#{manageSectorsController.save}" value="#{msgs['jbutler.crud.button.save']}" update=":form :globalMessages" icon="fa fa-fw fa-save" />
+					<p:defaultCommand target="saveButton" />
+					<p:hotkey bind="#{msgs['jbutler.crud.hotkey.backToList']}" action="#{manageSectorsController.list}" immediate="true" />
+				</ui:decorate>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{manageSectorsController.readOnly}">
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formbuttonpanel-01.xhtml">
+					<p:commandButton id="backButton" action="#{manageSectorsController.list}" value="#{msgs['jbutler.crud.button.back']}" immediate="true" icon="fa fa-fw fa-arrow-circle-left" />
+					<p:hotkey bind="#{msgs['jbutler.crud.hotkey.backToList']}" action="#{manageSectorsController.list}" immediate="true" />
+				</ui:decorate>
+			</h:panelGroup>
+		</ui:decorate>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                template="/resources/#{coreInfo.decorator}/decorator.xhtml">
+	<f:event listener="#{installSystemController.begin}" type="preRenderView" />
+	<ui:define name="title"><h:outputText value="#{msgsCore['installSystem.title']}" /></ui:define>
+    
+    <ui:define name="description"><h:outputText value="#{msgsCore['installSystem.title.description']}" /></ui:define>
+
+  	<ui:define name="body">
+		<!-- Shown only if the system is already installed. -->
+		<h:panelGroup id="systemInstalled" rendered="#{coreInfo.systemInstalled}">
+			<p><h:outputText value="#{msgsCore['installSystem.text.systemAlreadyInstalled']}" /></p>
+		</h:panelGroup>
+
+		<!-- Shown when the system is not yet installed. -->
+		<h:panelGroup id="systemNotInstalled" rendered="#{not coreInfo.systemInstalled}">
+			<p><h:outputText value="#{msgsCore['installSystem.text.instructions.admin']}" /></p>
+
+			<!-- The form to be filled with information on the administrator. -->
+			<ui:decorate template="/resources/#{coreInfo.decorator}/form.xhtml">
+				<ui:param name="formName" value="form" /> 
+				<ui:param name="formLabel" value="#{msgsCore['installSystem.form.admin']}" />
+				<p:focus />
+
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">
+					<ui:param name="fieldName" value="name" />
+					<ui:param name="label" value="#{msgsCore['installSystem.field.admin.name']}" />
+					<p:inputText id="name" value="#{installSystemController.admin.name}" required="true" pt:placeholder="#{msgsCore['installSystem.field.admin.name.placeholder']}">
+						<f:ajax event="blur" render="nameField userNameField" listener="#{installSystemController.suggestUserName}" />
+					</p:inputText>
+				</ui:decorate>
+
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">
+					<ui:param name="fieldName" value="email" />
+					<ui:param name="label" value="#{msgsCore['installSystem.field.admin.email']}" />
+					<p:inputText id="email" value="#{installSystemController.admin.email}" required="true" pt:placeholder="#{msgsCore['installSystem.field.admin.email.placeholder']}">
+						<f:ajax event="blur" render="emailField" />
+					</p:inputText>
+				</ui:decorate>
+
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">
+					<ui:param name="fieldName" value="userName" />
+					<ui:param name="label" value="#{msgsCore['installSystem.field.admin.userName']}" />
+					<p:inputText id="userName" value="#{installSystemController.admin.userName}" required="true" pt:placeholder="#{msgsCore['installSystem.field.admin.userName.placeholder']}">
+						<f:ajax event="blur" render="userNameField" />
+					</p:inputText>
+				</ui:decorate>
+
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">
+					<ui:param name="fieldName" value="password" />
+					<ui:param name="label" value="#{msgsCore['installSystem.field.admin.password']}" />
+					<p:password id="password" minLength="6" value="#{installSystemController.admin.password}" required="true" feedback="true" promptLabel="#{msgs['primefaces.password.prompt']}" weakLabel="#{msgs['primefaces.password.weak']}" goodLabel="#{msgs['primefaces.password.good']}" strongLabel="#{msgs['primefaces.password.strong']}" />
+				</ui:decorate>
+
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">
+					<ui:param name="fieldName" value="repeatPassword" />
+					<ui:param name="label" value="#{msgsCore['installSystem.field.admin.repeatPassword']}" />
+					<p:password id="repeatPassword" value="#{installSystemController.repeatPassword}" required="true" feedback="false">
+						<f:ajax event="blur" render=":globalMessages" listener="#{installSystemController.ajaxCheckPasswords}" execute="password repeatPassword" />
+					</p:password>
+				</ui:decorate>
+				
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">
+					<ui:param name="fieldName" value="cep" />
+					<ui:param name="label" value="#{msgsCore['installSystem.field.admin.cep']}" />
+					<p:inputText id="cep" value="#{installSystemController.admin.address.cep}" pt:placeholder="#{msgsCore['installSystem.field.admin.cep.placeholder']}">
+						<p:ajax event="blur" update="districtField streetField cityField stateField" listener="#{installSystemController.findAddress}" />
+					</p:inputText>
+				</ui:decorate>
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">
+					<ui:param name="fieldName" value="street" />
+					<ui:param name="label" value="#{msgsCore['installSystem.field.admin.street']}" />
+					<p:inputText id="street" value="#{installSystemController.admin.address.street}">
+					</p:inputText>
+				</ui:decorate>
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">
+					<ui:param name="fieldName" value="number" />
+					<ui:param name="label" value="#{msgsCore['installSystem.field.admin.number']}" />
+					<p:inputText id="number" value="#{installSystemController.admin.address.number}">
+					</p:inputText>
+				</ui:decorate>
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">
+					<ui:param name="fieldName" value="city" />
+					<ui:param name="label" value="#{msgsCore['installSystem.field.admin.city']}" />
+					<p:inputText id="city" value="#{installSystemController.admin.address.city}">
+					</p:inputText>
+				</ui:decorate>
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">
+					<ui:param name="fieldName" value="state" />
+					<ui:param name="label" value="#{msgsCore['installSystem.field.admin.state']}" />
+					<p:inputText id="state" value="#{installSystemController.admin.address.state}">
+					</p:inputText>
+				</ui:decorate>
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formfield.xhtml">
+					<ui:param name="fieldName" value="district" />
+					<ui:param name="label" value="#{msgsCore['installSystem.field.admin.district']}" />
+					<p:inputText id="district" value="#{installSystemController.admin.address.district}">
+					</p:inputText>
+				</ui:decorate>
+				
+				<p:panel id="phoneNumbers" header="Phone Numbers" toggleable="true" toggleSpeed="500" widgetVar="panel">
+			 
+			        <p:ajax event="toggle" listener="#{installSystemController.onToggle}" update=":globalMessages" />
+			 
+			         <h:panelGrid columns="2" cellpadding="20px">
+			            <h:form>
+			            	<p:panelGrid columns="2">
+								<p:outputLabel value="PhoneType" for="phoneType" />
+								                            
+								<p:selectOneMenu value="#{installSystemController.insertedPhone.type.type}" id="phoneType">
+								    <f:selectItem itemLabel="Select One..." itemValue="#{null}" />
+								    <f:selectItems value="#{installSystemController.phoneTypes}" /> 
+								</p:selectOneMenu>
+				
+								<p:outputLabel value="Number" for="phoneNumber" />
+								<p:inputText id="phoneNumber" value="#{installSystemController.insertedPhone.number}"></p:inputText>				
+								
+								<p:commandButton value="Save Number" action="#{installSystemController.addPhone}" process="@form" update="@form form:formPhoneTable:phoneTable" />
+								<p:commandButton value="Clear Form" action="#{installSystemController.clearPhone}" process="@form" update="@form" />
+								
+							</p:panelGrid>
+			            </h:form>
+			            <h:form id="formPhoneTable">
+				            <p:dataTable value="#{installSystemController.phoneList}" var="telephone" id="phoneTable" paginator="true" rows="5">
+								
+								<f:facet name="header">Telephones</f:facet>
+								<p:column headerText="Type">
+									<h:outputText value="#{telephone.type.type}" />
+								</p:column>
+								
+								<p:column headerText="Number">
+									<h:outputText value="#{telephone.number}" />
+								</p:column>
+								
+							</p:dataTable>
+			            </h:form>
+			        </h:panelGrid>
+			 
+			        <f:facet name="options">
+			            <p:menu>
+			                <p:submenu label="Settings">
+			                    <p:menuitem value="Toggle" url="#" icon="ui-icon-newwin" onclick="PF('panel').toggle()" />
+			                </p:submenu>
+			            </p:menu>
+			        </f:facet>
+			    </p:panel>
+				
+
+				<ui:decorate template="/resources/#{coreInfo.decorator}/formbuttonpanel-01.xhtml">
+					<p:commandButton action="#{installSystemController.registerAdministrator}" value="#{msgsCore['installSystem.button.registerAdministrator']}" update=":globalMessages form" icon="fa fa-fw fa-save" />
+				</ui:decorate>
+			</ui:decorate>
+		</h:panelGroup>
+	</ui:define>
+</ui:composition>
+
+	
